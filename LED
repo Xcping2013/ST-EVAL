@@ -1,0 +1,78 @@
+GPIO_TypeDef* LED_PORT[LEDn] = {LED1_GPIO_PORT, LED2_GPIO_PORT, LED3_GPIO_PORT,LED4_GPIO_PORT};
+
+typedef enum {  LED1 = 0,  LED2 = 1,  LED3 = 2,  LED4 = 3,  
+                /* Color led aliases */
+                 LED_GREEN  = LED1,  LED_ORANGE = LED2,  LED_RED    = LED3,  LED_BLUE   = LED4                                   
+             } Led_TypeDef;
+
+const uint16_t LED_PIN[LEDn] = {LED1_PIN, LED2_PIN, LED3_PIN,LED4_PIN};
+
+------void                    BSP_LED_Init(Led_TypeDef Led);
+------void                    BSP_LED_On(Led_TypeDef Led);
+------void                    BSP_LED_Off(Led_TypeDef Led);
+------void                    BSP_LED_Toggle(Led_TypeDef Led);
+------void                    Toggle_Leds(void);
+------void                    Error_Handler(void);
+
++BSP_LED_Init(LED_GREEN);
+  --void BSP_LED_Init(Led_TypeDef Led);
+  --void BSP_LED_Init(Led_TypeDef Led)
+    {
+      GPIO_InitTypeDef  GPIO_InitStruct;
+      /* Enable the GPIO_LED clock */
+      LEDx_GPIO_CLK_ENABLE(Led);
+      
+      /* Configure the GPIO_LED pin */
+      GPIO_InitStruct.Pin = LED_PIN[Led];
+      GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+      GPIO_InitStruct.Pull = GPIO_PULLUP;
+      GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+      
+      HAL_GPIO_Init(LED_PORT[Led], &GPIO_InitStruct);
+      
+      HAL_GPIO_WritePin(LED_PORT[Led], LED_PIN[Led], GPIO_PIN_SET); 
+    }
+
++BSP_LED_On(LED_RED);
+  --void BSP_LED_On(Led_TypeDef Led);
+  --void BSP_LED_On(Led_TypeDef Led)
+    {
+      HAL_GPIO_WritePin(LED_PORT[Led], LED_PIN[Led], GPIO_PIN_RESET);
+    }
+  
++void BSP_LED_Off(Led_TypeDef Led);
+  --void BSP_LED_Off(Led_TypeDef Led)
+    {
+      HAL_GPIO_WritePin(LED_PORT[Led], LED_PIN[Led], GPIO_PIN_SET);
+    }
+    
+void BSP_LED_Toggle(Led_TypeDef Led)
+{
+  HAL_GPIO_TogglePin(LED_PORT[Led], LED_PIN[Led]);
+}
+
+void Toggle_Leds(void)
+{
+  static uint8_t ticks = 0;
+  
+  if(ticks++ > 100)
+  {
+    BSP_LED_Toggle(LED_BLUE);
+    ticks = 0;
+  }
+}
+
+void Error_Handler(void)
+{
+  /* Turn LED REDon */
+  BSP_LED_On(LED_RED);
+  while(1)
+  {
+  }
+}
+
+void SysTick_Handler(void)
+{
+  HAL_IncTick();
+  Toggle_Leds();
+}
