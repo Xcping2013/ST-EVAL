@@ -1,0 +1,28 @@
+1.MBED_PORTNAMES_H
+  typedef enum {    PortA = 0,    PortB = 1,    PortC = 2,    PortD = 3,    PortE = 4                                      }PortName;
+  
+2.MBED_PINNAMES_H   
+  #include "cmsis.h":
+      -#include "stm32f1xx.h"
+          --#include "stm32f10Xxx.h"              CMSIS Cortex-M3 Device Peripheral Access Layer;register,bits,memory mapping...
+            ---#include "core_cm3.h"              CMSIS Cortex-M3 Core   Peripheral Access Layer
+            ---#include "system_stm32f1xx.h"      CMSIS Cortex-M3 Device Peripheral Access Layer System
+          --#include "stm32f1xx_hal.h"            HAL module driver
+            ---#include "stm32f1xx_hal_conf.h"    set Include module's header file 
+      -#include "cmsis_nvic.h"
+          --#include "cmsis.h"
+          NVIC_Set|GetVector
+  // See stm32f3xx_hal_gpio.h and stm32f3xx_hal_gpio_ex.h for values of MODE, PUPD and AFNUM
+  #define STM_PIN_DATA(MODE, PUPD, AFNUM)  ((int)(((AFNUM) << 7) | ((PUPD) << 4) | ((MODE) << 0)))...#define STM_MODE_IT_EVT_RESE  (12)
+  STM_PORT(X);    STM_PIN(X)    
+  typedef enum {    PIN_INPUT,    PIN_OUTPUT                                                                               } PinDirection;
+  typedef enum {    PA_0  = 0x00...PA_15 = 0x0F,  PB_0  = 0x10...PB_15 = 0x1F,PC_0  = 0x20...PC_15 = 0x2F,  PD_2  = 0x32,
+                    A0    = PA_0...A5    = PC_0,  D0    = PA_3...D15 = PB_8,       // Arduino connector namings
+                    LED1  = PA_5...LED4  = PA_5,  
+                    USER_BUTTON = PC_13,           SERIAL_TX   = PA_2
+                    ...
+                    I2C_SCL     = PB_8,           I2C_SDA     = PB_9...           // Generic signals namings
+                    NC = (int)0xFFFFFFFF                                          // Not connected
+                                                                                                                           } PinName;
+  typedef enum {  PullNone  = 0,    PullUp    = 1,    PullDown  = 2,    OpenDrain = 3,    PullDefault = PullNone           } PinMode;
+
