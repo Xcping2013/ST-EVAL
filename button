@@ -1,0 +1,80 @@
+GPIO_TypeDef* BUTTON_PORT[BUTTONn] = {TAMPER_BUTTON_GPIO_PORT}; 
+const uint16_t BUTTON_PIN[BUTTONn] = {TAMPER_BUTTON_PIN}; 
+const uint8_t BUTTON_IRQn[BUTTONn] = {TAMPER_BUTTON_EXTI_IRQn};
+
+typedef enum {  BUTTON_TAMPER = 0}                              Button_TypeDef;
+typedef enum {  BUTTON_MODE_GPIO = 0,  BUTTON_MODE_EXTI = 1}    ButtonMode_TypeDef;
+
+----void     BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef Button_Mode);
+----uint32_t BSP_PB_GetState(Button_TypeDef Button);
+----uint8_t  CheckForUserInput(void);
+
+++++BSP_PB_Init(BUTTON_TAMPER, BUTTON_MODE_GPIO);
+++++if(BSP_PB_GetState(BUTTON_TAMPER) == GPIO_PIN_RESET)
+++++while(CheckForUserInput() == 0);
+++++if(CheckForUserInput() > 0)
+++++while(!CheckForUserInput())
+
+uint32_t BSP_PB_GetState(Button_TypeDef Button)
+{
+  return HAL_GPIO_ReadPin(BUTTON_PORT[Button], BUTTON_PIN[Button]);
+}
+
+if(BSP_PB_GetState(BUTTON_TAMPER) == GPIO_PIN_RESET)
+{
+   while (BSP_PB_GetState(BUTTON_TAMPER) == GPIO_PIN_RESET);
+}
+
+uint8_t CheckForUserInput(void)
+{
+  if(BSP_PB_GetState(BUTTON_TAMPER) == GPIO_PIN_RESET)
+  {
+    while (BSP_PB_GetState(BUTTON_TAMPER) == GPIO_PIN_RESET);
+    return 1 ;
+  }
+  return 0;
+}
+
+  while (1)
+  {
+    if(CheckForUserInput() > 0)
+    {
+      return;
+    }    
+    HAL_Delay (10);
+  }
+  
+  while(!CheckForUserInput())
+  {
+  }
+
+void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef Mode)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  
+  /* Enable the Tamper Clock */
+  TAMPERx_GPIO_CLK_ENABLE(Button);
+  
+  GPIO_InitStruct.Pin = BUTTON_PIN[Button];
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  
+  if (Mode == BUTTON_MODE_GPIO)
+  {
+    /* Configure Button pin as input */
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    
+    HAL_GPIO_Init(BUTTON_PORT[Button], &GPIO_InitStruct);
+  }
+  
+  if (Mode == BUTTON_MODE_EXTI)
+  {
+    /* Configure Button pin as input with External interrupt */
+      GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    HAL_GPIO_Init(BUTTON_PORT[Button], &GPIO_InitStruct);
+    
+    /* Enable and set Button EXTI Interrupt to the lowest priority */
+    HAL_NVIC_SetPriority((IRQn_Type)(BUTTON_IRQn[Button]), 0x03, 0x00);
+    HAL_NVIC_EnableIRQ((IRQn_Type)(BUTTON_IRQn[Button]));
+  }
+}
