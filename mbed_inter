@@ -36,6 +36,7 @@
   typedef enum {  PWM_1 = (int)TIM1_BASE,    PWM_2 = (int)TIM2_BASE,    PWM_3 = (int)TIM3_BASE,    PWM_4 = (int)TIM4_BASE  } PWMName;
   
 4.MBED_OBJECTS_H
+  -#include "cmsis.h" #include "PortNames.h"  #include "PeripheralNames.h"  #include "PinNames.h"
   -#include "gpio_object.h"     gpio_t; gpio_write; gpio_read;  gpio_is_connected
   struct gpio_irq_s {    IRQn_Type irq_n;    uint32_t irq_index;    uint32_t event;    PinName pin;};
   struct port_s { PortName port;    uint32_t mask;    PinDirection direction;    __IO uint32_t *reg_in;    __IO uint32_t *reg_out;};
@@ -46,4 +47,11 @@
                     PinName pin_miso;    PinName pin_mosi;    PinName pin_sclk;    PinName pin_ssel;};
   struct i2c_s {    I2CName  i2c;    uint32_t slave;};
   struct pwmout_s { PWMName pwm;    PinName pin;    uint32_t period;    uint32_t pulse;};
-
+  
+5.MBED_DEVICE_H
+  -#include "objects.h"
+  -DEVICE_I2C......
+  
+6.MBED_TICKER_API_H
+  -#include "device.h"
+  -structure    Ticker's event ; Ticker's interface;  Tickers events queue; Tickers data;
